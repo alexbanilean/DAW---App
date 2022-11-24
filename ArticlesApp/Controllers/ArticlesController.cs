@@ -1,6 +1,7 @@
 ﻿using ArticlesApp.Data;
 using ArticlesApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArticlesApp.Controllers
@@ -23,6 +24,11 @@ namespace ArticlesApp.Controllers
             // ViewBag.OriceDenumireSugestiva
             ViewBag.Articles = articles;
 
+            if(TempData.ContainsKey("message"))
+            {
+                ViewBag.Msg = TempData["message"];
+            }
+
             return View();
         }
 
@@ -36,12 +42,36 @@ namespace ArticlesApp.Controllers
                                          .Where(art => art.Id == id)
                                          .First();
 
-            ViewBag.Article = article;
-            ViewBag.Category = article.Category;
+            // ViewBag.Article = article;
+            // ViewBag.Category = article.Category;
 
             // ViewBag.Category (ViewBag.UnNume) = article.Category (proprietatea Category)
 
-            return View();
+            return View(article);
+        }
+
+        // Adaugarea unui comentariu asociat unui articol in baza de date
+        [HttpPost]
+        public IActionResult Show([FromForm] Comment comm)
+        {
+            comm.Date = DateTime.Now;
+
+            if(ModelState.IsValid)
+            {
+                db.Comments.Add(comm);
+                db.SaveChanges();
+                return Redirect("/Articles/Show/" + comm.ArticleId);
+            }
+            else
+            {
+                Article art = db.Articles.Include("Category")
+                                             .Include("Comments")
+                                             .Where(art => art.Id == comm.ArticleId)
+                                             .First();
+
+                return View(art);
+            }
+
         }
 
         // Se afiseaza formularul in care se vor completa datele unui articol
@@ -50,12 +80,15 @@ namespace ArticlesApp.Controllers
 
         public IActionResult New() 
         {
-            var categories = from categ in db.Categories select categ;
+            // var categories = from categ in db.Categories select categ;
 
-            ViewBag.Categories = categories;
+            // ViewBag.Categories = categories;
 
+            Article article = new Article();
 
-            return View();
+            article.Categ = GetAllCategories();
+
+            return View(article);
         }
 
         // Adaugarea articolului in baza de date
@@ -63,15 +96,19 @@ namespace ArticlesApp.Controllers
         [HttpPost]
         public IActionResult New(Article article)
         {
-            try 
+            article.Date = DateTime.Now;
+            article.Categ = GetAllCategories();
+
+            if(ModelState.IsValid) 
             { 
                 db.Articles.Add(article);
                 db.SaveChanges();
+                TempData["message"] = "Articolul a fost adaugat";
                 return RedirectToAction("Index");
             }
-            catch(Exception) 
+            else
             {
-                return RedirectToAction("New");
+                return View(article);
             }
         }
 
@@ -85,39 +122,34 @@ namespace ArticlesApp.Controllers
                                          .Where(art => art.Id == id)
                                          .First();
 
-            ViewBag.Article = article;
-            ViewBag.Category = article.Category;
+            article.Categ = GetAllCategories();
 
-            var categories = from categ in db.Categories
-                             select categ;
-
-            ViewBag.Categories = categories;
-
-            return View();
+            return View(article);
         }
 
         // Se adauga articolul modificat in baza de date
         [HttpPost]
         public IActionResult Edit(int id, Article requestArticle)
-        {
+        {   
             Article article = db.Articles.Find(id);
+            article.Categ = GetAllCategories();
 
-            try
+            if(ModelState.IsValid)
             {
-                {
-                    article.Title = requestArticle.Title;
-                    article.Content = requestArticle.Content;
-                    article.Date = requestArticle.Date;
-                    article.CategoryId = requestArticle.CategoryId;
-                    db.SaveChanges();
-                }
+                article.Title = requestArticle.Title;
+                article.Content = requestArticle.Content;
+                article.Date = requestArticle.Date;
+                article.CategoryId = requestArticle.CategoryId;
+                db.SaveChanges();
+
+                TempData["message"] = "Articolul a fost modificat";
 
                 return RedirectToAction("Index");
             }
-
-            catch (Exception)
+            else
             {
-                return RedirectToAction("Edit", id);
+                requestArticle.Categ = GetAllCategories();
+                return View(requestArticle);
             }
         }
 
@@ -128,7 +160,44 @@ namespace ArticlesApp.Controllers
             Article article = db.Articles.Find(id);
             db.Articles.Remove(article);
             db.SaveChanges();
+            TempData["message"] = "Articolul a fost sters";
             return RedirectToAction("Index");
         }
+
+        public IEnumerable<SelectListItem> GetAllCategories()
+        {
+            // generam o lista de tipul SelectListItem fara elemente
+            var selectList = new List<SelectListItem>();
+
+            // extragem toate categoriile din baza de date
+            var categories = from cat in db.Categories
+                             select cat;
+
+            // iteram prin categorii
+            foreach (var category in categories)
+            {
+                // adaugam in lista elementele necesare pentru dropdown
+                // id-ul categoriei si denumirea acesteia
+                selectList.Add(new SelectListItem
+                {
+                    Value = category.Id.ToString(),
+                    Text = category.CategoryName.ToString()
+                });
+            }
+
+            /* Sau se poate implementa astfel: 
+            * 
+            foreach (var category in categories)
+            {
+                var listItem = new SelectListItem();
+                listItem.Value = category.Id.ToString();
+                listItem.Text = category.CategoryName.ToString();
+                selectList.Add(listItem);
+            }*/
+
+            // returnam lista de categorii
+            return selectList;
+        }
+
     }
 }

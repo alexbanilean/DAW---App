@@ -1,14 +1,16 @@
-﻿@{
-    ViewBag.Title = "Afisare categorie";
+﻿@model ArticlesApp.Models.Category
+
+@{
+    ViewBag.Title = "Show";
 }
 
 <h2>@ViewBag.Title</h2>
 
 <br />
 
-<p>@ViewBag.Category.CategoryName</p>
+<p>@Model.CategoryName</p>
 
-<form method="post" action="/Categories/Delete/@ViewBag.Category.Id">
+<form method="post" action="/Categories/Delete/@Model.Id">
     <button class="btn btn-danger" type="submit">Sterge categoria</button>
 </form>
 

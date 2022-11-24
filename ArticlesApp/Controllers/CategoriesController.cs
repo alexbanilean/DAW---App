@@ -18,15 +18,21 @@ namespace ArticlesApp.Controllers
             var categories = from category in db.Categories
                              orderby category.CategoryName
                              select category;
+
             ViewBag.Categories = categories;
+
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Msg = TempData["message"].ToString();
+            }
+
             return View();
         }
 
         public ActionResult Show(int id)
         {
             Category category = db.Categories.Find(id);
-            ViewBag.Category = category;
-            return View();
+            return View(category);
         }
 
         public ActionResult New()
@@ -37,43 +43,45 @@ namespace ArticlesApp.Controllers
         [HttpPost]
         public ActionResult New(Category cat)
         {
-            try
+            if(ModelState.IsValid)
             {
                 db.Categories.Add(cat);
                 db.SaveChanges();
+
+                TempData["message"] = "Categoria a fost adaugata";
+
                 return RedirectToAction("Index");
             }
-            catch (Exception e)
+            else
             {
-                return View();
+                return View(cat);
             }
         }
 
         public ActionResult Edit(int id)
         {
             Category category = db.Categories.Find(id);
-            ViewBag.Category = category;
-            return View();
+
+            return View(category);
         }
 
         [HttpPost]
         public ActionResult Edit(int id, Category requestCategory)
         {
-            try
-            {
-                Category category = db.Categories.Find(id);
+            Category category = db.Categories.Find(id);
 
-                {
-                    category.CategoryName = requestCategory.CategoryName;
-                    db.SaveChanges();
-                }
+            if(ModelState.IsValid)
+            {
+                category.CategoryName = requestCategory.CategoryName;
+                db.SaveChanges();
+
+                TempData["message"] = "Categoria a fost modificata";
 
                 return RedirectToAction("Index");
             }
-            catch (Exception e)
+            else
             {
-                ViewBag.Category = requestCategory;
-                return View();
+                return View(requestCategory);
             }
         }
 
@@ -83,6 +91,7 @@ namespace ArticlesApp.Controllers
             Category category = db.Categories.Find(id);
             db.Categories.Remove(category);
             db.SaveChanges();
+            TempData["message"] = "Categoria a fost stearsa";
             return RedirectToAction("Index");
         }
     }

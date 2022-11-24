@@ -1,43 +1,48 @@
-﻿@{
+﻿@model ArticlesApp.Models.Article
+
+@{
     ViewBag.Title = "Edit";
 }
 
-<form method="post" action="/Articles/Edit/@ViewBag.Article.Id">
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Articles"))
+{
 
-    <label>Titlu articol</label>
-    <input type="text" name="Title" value="@ViewBag.Article.Title" />
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+    @Html.Label("Title", "Titlu articol")
+
+    <br />
+
+    @Html.EditorFor(m => m.Title, new { htmlAttributes = new { @class = "form-control" } })
     
-    <br />
+    @Html.ValidationMessageFor(m => m.Title, null, new {@class = "text-danger" })
+
+    <br /><br />
+
+    @Html.Label("Content", "Continut Articol")
+
     <br />
 
-    <label>Continut articol</label>
-    <input type="text" name="Content" value="@ViewBag.Article.Content" />
+    @Html.Editor("Content", new { htmlAttributes = new { @class = "form-control" } })
     
-    <br />
+    @Html.ValidationMessage("Content", null, new { @class = "text-danger" })
 
-    <input type="hidden" name="Date" value="@DateTime.Now" />
+    <br /><br />
+
+    @Html.HiddenFor(m => m.Date)
     
-    <br />
+    <label>Selectati categoria</label>
 
-    <select name="CategoryId">
-        @foreach (var category in ViewBag.Categories)
-        {
-            if (category.Id == ViewBag.Category.Id)
-            {
-                <option selected="selected" value="@category.Id">@category.CategoryName</option>
-            }
-            else
-            {
-                <option value="@category.Id">@category.CategoryName</option>
-            }
-        }
-    </select>
+    @Html.DropDownListFor(m => m.CategoryId,
+        new SelectList(Model.Categ, "Value", "Text"),
+        "Selectati categoria", new { @class = "form-control" })
+
+    @Html.ValidationMessageFor(m => m.CategoryId, null, new { @class = "text-danger" })
 
     <br />
-    <br />
 
-    <button class="btn btn-success" type="submit">Modifica articol</button>
+    <button class="btn btn-sm btn-success" type="submit">Modifica articol</button>
 
-</form>
+}
 
 

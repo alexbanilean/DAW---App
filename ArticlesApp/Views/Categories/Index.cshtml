@@ -1,12 +1,19 @@
 ﻿@{
-    ViewBag.Title = "Lista categorii";
+    ViewBag.Title = "Categorii";
 }
 
 <h2>@ViewBag.Title</h2>
 
-<br />  
+<br /> 
 
-<a href="/Articles/Index">Inapoi la articole</a>
+@if (ViewBag.Msg != null)
+{
+    <h2 class="alert-success mb-5 text-center p-3">@ViewBag.Msg</h2>
+}
+
+<br />
+
+<a class="btn btn-outline-success" href="/Articles/Index">Inapoi la articole</a>
 
 <br />
 <br />

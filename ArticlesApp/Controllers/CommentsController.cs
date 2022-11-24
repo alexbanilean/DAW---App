@@ -12,26 +12,6 @@ namespace ArticlesApp.Controllers
             db = context;
         }
 
-        // Adaugarea unui comentariu asociat unui articol in baza de date
-        [HttpPost]
-        public IActionResult New(Comment comm)
-        {
-            comm.Date = DateTime.Now;
-
-            try
-            {
-                db.Comments.Add(comm);
-                db.SaveChanges();
-                return Redirect("/Articles/Show/" + comm.ArticleId);
-            }
-
-            catch (Exception)
-            {
-                return Redirect("/Articles/Show/" + comm.ArticleId);
-            }
-
-        }
-
         // Stergerea unui comentariu asociat unui articol din baza de date
         [HttpPost]
         public IActionResult Delete(int id)
@@ -48,15 +28,16 @@ namespace ArticlesApp.Controllers
         public IActionResult Edit(int id)
         {
             Comment comm = db.Comments.Find(id);
-            ViewBag.Comment = comm;
-            return View();
+
+            return View(comm);
         }
 
         [HttpPost]
         public IActionResult Edit(int id, Comment requestComment)
         {
             Comment comm = db.Comments.Find(id);
-            try
+            
+            if(ModelState.IsValid)
             {
                 comm.Content = requestComment.Content;
 
@@ -64,9 +45,9 @@ namespace ArticlesApp.Controllers
 
                 return Redirect("/Articles/Show/" + comm.ArticleId);
             }
-            catch (Exception e)
+            else
             {
-                return Redirect("/Articles/Show/" + comm.ArticleId);
+                return View(requestComment);
             }
 
         }

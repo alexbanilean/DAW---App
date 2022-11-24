@@ -1,4 +1,6 @@
-﻿@{
+﻿@model ArticlesApp.Models.Comment
+
+@{
     ViewBag.Title = "Edit";
 }
 
@@ -6,13 +8,15 @@
 
 <br />
 
-<form method="post" action="/Comments/Edit/@ViewBag.Comment.Id">
+<form method="post" action="/Comments/Edit/@Model.Id">
     <label>Continut comentariu</label>
     
     <br />
 
-    <textarea name="Content">@ViewBag.Comment.Content</textarea>
+    <textarea name="Content">@Model.Content</textarea>
     
+    @Html.ValidationMessageFor(m => m.Content, null, new { @class = "text-danger" })
+
     <br />
 
     <button class="btn btn-primary" type="submit">Editeaza comentariul</button>

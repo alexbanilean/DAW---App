@@ -1,15 +1,20 @@
-﻿@{
-    ViewBag.Title = "Editare categorie";
+﻿@model ArticlesApp.Models.Category
+
+@{
+    ViewBag.Title = "Edit";
 }
 
 <h2>@ViewBag.Title</h2>
 
-<form method="post" action="/Categories/Edit/@ViewBag.Category.Id">
-    <label>Nume categorie</label>
-    
+<form method="post" action="/Categories/Edit/@Model.Id">
+
+    @Html.Label("CategoryName", "Denumire categorie")
+
     <br /> 
     
-    <input type="text" name="CategoryName" value="@ViewBag.Category.CategoryName"/>
+    @Html.Editor("CategoryName")
+
+    @Html.ValidationMessageFor(m => m.CategoryName, null, new { @class = "text-danger" })
 
     <br />
     <br />
