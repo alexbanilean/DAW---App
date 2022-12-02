@@ -6,7 +6,9 @@
 
 <h2>Adaugare Categorie</h2>
 
-<form method="post" action="/Categories/New">
+@using (Html.BeginForm(actionName: "New", controllerName: "Categories", method: FormMethod.Post))
+{
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
     @Html.Label("CategoryName", "Denumire categorie")
     
@@ -19,5 +21,4 @@
     <br /><br />
     
     <button class="btn btn-success" type="submit">Adauga categorie</button>
-</form>
-
+}

@@ -1,9 +1,11 @@
 ﻿using ArticlesApp.Data;
 using ArticlesApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArticlesApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext db;
@@ -43,7 +45,7 @@ namespace ArticlesApp.Controllers
         [HttpPost]
         public ActionResult New(Category cat)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 db.Categories.Add(cat);
                 db.SaveChanges();
@@ -54,6 +56,7 @@ namespace ArticlesApp.Controllers
             }
             else
             {
+                Console.WriteLine("Error New Categ!");
                 return View(cat);
             }
         }

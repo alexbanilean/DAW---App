@@ -11,13 +11,6 @@
     <h2 class="alert-success mb-5 text-center p-3">@ViewBag.Msg</h2>
 }
 
-<div class="d-flex justify-content-center">
-    <a class="btn btn-outline-success" href="/Categories/Index">Afisare categorii</a>
-    <br/>
-    <a class="btn btn-outline-success" href="/Articles/New">Adauga articol</a>
-    <br/>
-</div>
-
 <br/>
 
 @foreach (ArticlesApp.Models.Article article in ViewBag.Articles)

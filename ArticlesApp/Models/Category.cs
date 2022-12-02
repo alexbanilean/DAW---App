@@ -8,8 +8,8 @@ namespace ArticlesApp.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Numele categoriei este obligatoriu")]
-        public string CategoryName { get; set; }
-        public virtual ICollection<Article> Articles { get; set; }
+        public string? CategoryName { get; set; }
+        public virtual ICollection<Article>? Articles { get; set; }
     }
 
 }
